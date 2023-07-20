@@ -1,8 +1,8 @@
 #!/bin/sh
-echo "Datto Networking LTE Tool V1.5"
+echo "Datto Networking LTE Tool V1.6"
 
 # Check the device type
-model=$(cat /etc/datto/model)
+model=$(cat /etc/datto/model;echo)
 
 if [[ "$model" == *"DNA"* ]]; then
   modemmanager_cmd="/etc/init.d/dna-modemmanager"
