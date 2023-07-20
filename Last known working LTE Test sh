@@ -1,4 +1,5 @@
 #!/bin/sh
+echo "Datto Networking LTE Tool V1.3"
 
 # Function to echo and then run a command
 run_cmd() {
@@ -24,7 +25,7 @@ if run_cmd "ping -I lte0 8.8.8.8 -c 3"; then
 fi
 
 # Step 3
-run_cmd "lsusb"
+run_cmd "lsusb -t"
 
 # Step 4
 run_cmd "modemreboot"
@@ -39,10 +40,7 @@ if run_cmd "ping -I lte0 8.8.8.8 -c 3"; then
 fi
 
 # Step 7
-model=$(cat /etc/datto/model)
-if [ "$model" = "VZ5" ] || [ "$model" = "VZ6" ]; then
-    run_cmd "sequans-gpio-reset"
-fi
+run_cmd "sequans-gpio-reset"
 
 # Step 8
 run_cmd "modemreconnect"
