@@ -5,12 +5,16 @@ echo"  ║║├─┤ │  │ │ │  ║║║├┤  │ ││││ │�
 echo" ═╩╝┴ ┴ ┴  ┴ └─┘  ╝╚╝└─┘ ┴ └┴┘└─┘┴└─┴ ┴┴┘└┘└─┘  ╩═╝╩ ╚═╝   ╩ └─┘└─┘┴─┘"
 echo "Datto Networking LTE Tool V2.2"
 
-# Check the device type
-model=$(cat /etc/datto/model;echo)
+# Attempt to get the device type
+if cat /etc/datto/model >/dev/null 2>&1; then
+    model=$(cat /etc/datto/model)
+else
+    model="D200"
+fi
 
 if echo "$model" | grep -q "DNA"; then
     modemmanager_cmd="/etc/init.d/dna-modemmanager"
-elif echo "$model" | grep -q "D200"; then
+elif [ "$model" = "D200" ]; then
     modemmanager_cmd="/etc/init.d/d200-modemmanager"
 else
     echo "Unsupported device model. Exiting script."
