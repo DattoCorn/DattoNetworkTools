@@ -1,6 +1,18 @@
 #!/bin/sh
 echo "Datto Networking LTE Tool V1.3"
 
+# Check the device type
+model=$(cat /etc/datto/model)
+
+if [[ "$model" == *"DNA"* ]]; then
+  modemmanager_cmd="/etc/init.d/dna-modemmanager"
+elif [[ "$model" == *"D200"* ]]; then
+  modemmanager_cmd="/etc/init.d/d200-modemmanager"
+else
+  echo "Unsupported device model. Exiting script."
+  exit 1
+fi
+
 # Function to echo and then run a command
 run_cmd() {
     echo "Running: $1"
@@ -52,7 +64,7 @@ if run_cmd "ping -I lte0 8.8.8.8 -c 3"; then
 fi
 
 # Step 10
-run_cmd "/etc/init.d/dna-modemmanager stop"
+run_cmd "${modemmanager_cmd} stop"
 
 # Step 11
 echo "Running: pymm"
@@ -63,7 +75,7 @@ echo "pymm - Completed"
 echo "----------------------------------------------------"
 
 # Step 12
-run_cmd "/etc/init.d/dna-modemmanager start"
+run_cmd "${modemmanager_cmd} start"
 
 # Step 13
 if run_cmd "ping -I lte0 8.8.8.8 -c 3"; then
