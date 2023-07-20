@@ -1,5 +1,5 @@
 #!/bin/sh
-echo "Datto Networking LTE Tool V1.3"
+echo "Datto Networking LTE Tool V1.5"
 
 # Check the device type
 model=$(cat /etc/datto/model)
