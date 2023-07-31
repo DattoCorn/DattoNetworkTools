@@ -1,14 +1,6 @@
 {
     "vendors": [
       {
-        "pattern": "f8:d9:b8",
-        "name": "Datto Devices"
-      },
-      {
-        "pattern": "ac:86:74",
-        "name": "Vendor 2 Devices"
-      },
-      {
         "name": "r2p Asia-Pacific Pty Ltd",
         "pattern": "5C:2A:EF"
       },
