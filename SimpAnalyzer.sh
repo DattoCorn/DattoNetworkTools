@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Download the JSON file to /tmp folder
 curl -o /tmp/Vendors.json https://raw.githubusercontent.com/DattoCorn/DattoNetworkTools/main/Vendors.json
@@ -6,8 +6,7 @@ curl -o /tmp/Vendors.json https://raw.githubusercontent.com/DattoCorn/DattoNetwo
 # Function to get the vendor based on the MAC address prefix
 get_vendor() {
     local mac_prefix="$1"
-    local vendor=$(grep -i "\"$mac_prefix\"" /tmp/Vendors.json | awk -F '"' '{print $4}')
-    echo "$vendor"
+    grep -i "\"$mac_prefix\"" /tmp/Vendors.json | awk -F '"' '{print $4}'
 }
 
 # Print the custom column headers
@@ -16,7 +15,7 @@ printf "%-15s %-17s %-12s %-15s\n" "IP Address" "HW Address" "Device" "Vendor"
 printf "---------------------------------------------------------\n"
 
 # Process the output of the arp command
-while read -r line; do
+arp -a | while read -r line; do
     ip_address=$(echo "$line" | awk '{print $1}')
     hw_address=$(echo "$line" | awk '{print $3}')
     device=$(echo "$line" | awk '{print $7}')
@@ -27,4 +26,4 @@ while read -r line; do
 
     # Print the information in the desired format
     printf "%-15s %-17s %-12s %-15s\n" "$ip_address" "$hw_address" "$device" "$vendor"
-done < <(arp -a)
+done
