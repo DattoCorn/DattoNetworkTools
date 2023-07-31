@@ -7,7 +7,7 @@ curl -o /tmp/Vendors.json https://raw.githubusercontent.com/DattoCorn/DattoNetwo
 ARP_TABLE=$(cat /proc/net/arp)
 
 # Print the custom column headers
-printf "----------------------Simp Tool V2------------------------\n"
+printf "----------------------Simp Tool V1------------------------\n"
 printf "%-15s %-17s %-12s %-15s\n" "IP Address" "HW Address" "Device" "Vendor"
 printf "---------------------------------------------------------\n"
 
@@ -21,12 +21,11 @@ do
   # Extract the first 6 characters of the MAC address
   MAC_PREFIX=$(echo "$MAC_ADDRESS" | cut -d ":" -f 1-3)
   
-  # Check if the MAC address matches the patterns in the JSON file
+  # Search for the MAC prefix in the JSON file and extract the vendor name
   VENDOR_NAME="Unknown"
-  PATTERN_LINE=$(grep -n "\"$MAC_PREFIX\"" /tmp/Vendors.json | cut -d : -f 1)
-  if [ -n "$PATTERN_LINE" ]; then
-    NAME_LINE=$((PATTERN_LINE + 1))
-    VENDOR_NAME=$(sed -n "${NAME_LINE}p" /tmp/Vendors.json | grep -oP '"name":\s*"\K[^"]+')
+  VENDOR_ENTRY=$(cat /tmp/Vendors.json | grep -B 1 "\"pattern\": \"$MAC_PREFIX\"")
+  if [ -n "$VENDOR_ENTRY" ]; then
+    VENDOR_NAME=$(echo "$VENDOR_ENTRY" | grep -o '"name": "[^"]*' | cut -d '"' -f 4)
   fi
   
   # Output the custom formatted information for matched MAC address prefixes
