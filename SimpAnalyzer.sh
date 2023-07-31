@@ -18,12 +18,12 @@ do
   MAC_ADDRESS=$(echo "$line" | awk '{print $4}')
   DEVICE=$(echo "$line" | awk '{print $6}')
   
-  # Extract the first 6 characters of the MAC address
-  MAC_PREFIX=$(echo "$MAC_ADDRESS" | cut -d ":" -f 1-3)
+  # Extract the first 6 characters of the MAC address and convert to lowercase
+  MAC_PREFIX=$(echo "$MAC_ADDRESS" | cut -d ":" -f 1-3 | tr '[:upper:]' '[:lower:]')
   
   # Search for the MAC prefix in the JSON file and extract the vendor name
   VENDOR_NAME="Unknown"
-  VENDOR_ENTRY=$(cat /tmp/Vendors.json | grep -B 1 "\"pattern\": \"$MAC_PREFIX\"")
+  VENDOR_ENTRY=$(cat /tmp/Vendors.json | grep -i -B 1 "\"pattern\": \"$MAC_PREFIX\"")
   if [ -n "$VENDOR_ENTRY" ]; then
     VENDOR_NAME=$(echo "$VENDOR_ENTRY" | grep -o '"name": "[^"]*' | cut -d '"' -f 4)
   fi
