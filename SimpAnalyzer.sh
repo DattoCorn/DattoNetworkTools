@@ -13,7 +13,9 @@ get_vendor_name() {
   echo "$VENDOR_NAME"
 }
 
-# ... rest of the script ...
+# Print the table header
+printf "%-17s | %-25s | %s\n" "MAC Address" "Vendor" "Port"
+printf "-----------------------------------+---------------------------+-----------------\n"
 
 # Inside the loop...
 echo "$ARP_TABLE" | while read -r line
@@ -26,13 +28,8 @@ do
   MAC_PREFIX=$(echo "$MAC_ADDRESS" | cut -d ":" -f 1-3)
   
   # Check if the MAC address matches the specified patterns
-  MATCHED="N/A"
   VENDOR_NAME=$(get_vendor_name "$MAC_PREFIX")
   
-  if [ "$(echo "$MAC_PREFIX" | grep -E "^($MAC_PATTERN1|$MAC_PATTERN2)$")" ]; then
-    MATCHED="Matched"
-  fi
-  
   # Output the custom formatted information for matched MAC address prefixes
-  printf "%-15s %-17s %-12s %-15s\n" "$IP_ADDRESS" "$MAC_ADDRESS" "$DEVICE" "$VENDOR_NAME"
-done
+  printf "%-17s | %-25s | %s\n" "$MAC_ADDRESS" "$VENDOR_NAME" "$DEVICE"
+done | column -t -s "|"
