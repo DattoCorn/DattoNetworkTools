@@ -10,7 +10,7 @@ get_vendor() {
 }
 
 # Print the custom column headers
-printf "----------------------Simp Tool V1------------------------\n"
+printf "----------------------Simp Tool V1.3------------------------\n"
 printf "%-15s %-17s %-12s %-15s\n" "IP Address" "HW Address" "Device" "Vendor"
 printf "---------------------------------------------------------\n"
 
