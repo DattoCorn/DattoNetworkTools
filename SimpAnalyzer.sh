@@ -9,7 +9,8 @@ ARP_TABLE=$(cat /proc/net/arp)
 # Function to get vendor name from the JSON file
 get_vendor_name() {
   MAC=$1
-  VENDOR_NAME=$(jq -r --arg mac "$MAC" '.[$mac]' /tmp/Vendors.json)
+  MAC_PREFIX=$(echo "$MAC" | cut -d ":" -f 1-3)
+  VENDOR_NAME=$(jq -r --arg mac "$MAC_PREFIX" '.[$mac]' /tmp/Vendors.json)
   echo "$VENDOR_NAME"
 }
 
@@ -24,11 +25,8 @@ do
   MAC_ADDRESS=$(echo "$line" | awk '{print $4}')
   DEVICE=$(echo "$line" | awk '{print $6}')
   
-  # Extract the first 6 characters of the MAC address
-  MAC_PREFIX=$(echo "$MAC_ADDRESS" | cut -d ":" -f 1-3)
-  
   # Check if the MAC address matches the specified patterns
-  VENDOR_NAME=$(get_vendor_name "$MAC_PREFIX")
+  VENDOR_NAME=$(get_vendor_name "$MAC_ADDRESS")
   
   # Output the custom formatted information for matched MAC address prefixes
   printf "%-17s | %-25s | %s\n" "$MAC_ADDRESS" "$VENDOR_NAME" "$DEVICE"
