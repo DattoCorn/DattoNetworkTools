@@ -10,15 +10,20 @@ get_vendor() {
 }
 
 # Print the custom column headers
-printf "----------------------Simp Tool V1.3------------------------\n"
+printf "----------------------Simp Tool V1.4------------------------\n"
 printf "%-15s %-17s %-12s %-15s\n" "IP Address" "HW Address" "Device" "Vendor"
-printf "---------------------------------------------------------\n"
+printf "-----------------------------------------------------------\n"
 
-# Process the output of the arp command
-arp -a | while read -r line; do
+# Process the /proc/net/arp file
+cat /proc/net/arp | while read -r line; do
+    # Skip the header line
+    if echo "$line" | grep -q "IP address"; then
+        continue
+    fi
+
     ip_address=$(echo "$line" | awk '{print $1}')
-    hw_address=$(echo "$line" | awk '{print $3}')
-    device=$(echo "$line" | awk '{print $7}')
+    hw_address=$(echo "$line" | awk '{print $4}')
+    device=$(echo "$line" | awk '{print $6}')
     mac_prefix=$(echo "$hw_address" | awk -F ':' '{print $1":"$2":"$3}')
 
     # Get the vendor information using the get_vendor function
