@@ -3,6 +3,9 @@
 # Download the JSON file to /tmp
 curl -o /tmp/Vendors.json https://raw.githubusercontent.com/DattoCorn/DattoNetworkTools/main/Vendors.json
 
+# Remove ^M characters from the JSON file
+dos2unix /tmp/Vendors.json
+
 # Retrieve the ARP table
 ARP_TABLE=$(cat /proc/net/arp)
 
