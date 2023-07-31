@@ -1,34 +1,30 @@
-#!/bin/sh
+#!/bin/bash
 
 # Download the JSON file to /tmp folder
 curl -o /tmp/Vendors.json https://raw.githubusercontent.com/DattoCorn/DattoNetworkTools/main/Vendors.json
 
-# Retrieve the ARP table
-ARP_TABLE=$(cat /proc/net/arp)
-
-# Function to get vendor name from the JSON file
-get_vendor_name() {
-  MAC=$1
-  MAC_PREFIX=$(echo "$MAC" | cut -d ":" -f 1-3)
-  VENDOR_NAME=$(jq -r --arg mac "$MAC_PREFIX" '.[$mac]' /tmp/Vendors.json)
-  echo "$VENDOR_NAME"
+# Function to get the vendor based on the MAC address prefix
+get_vendor() {
+    local mac_prefix="$1"
+    local vendor=$(grep -i "\"$mac_prefix\"" /tmp/Vendors.json | awk -F '"' '{print $4}')
+    echo "$vendor"
 }
 
 # Print the custom column headers
-printf "----------------------Simp Tool V1.1------------------------\n"
+printf "----------------------Simp Tool V1------------------------\n"
 printf "%-15s %-17s %-12s %-15s\n" "IP Address" "HW Address" "Device" "Vendor"
 printf "---------------------------------------------------------\n"
 
-# Inside the loop...
-echo "$ARP_TABLE" | while read -r line
-do
-  IP_ADDRESS=$(echo "$line" | awk '{print $1}')
-  MAC_ADDRESS=$(echo "$line" | awk '{print $4}')
-  DEVICE=$(echo "$line" | awk '{print $6}')
-  
-  # Check if the MAC address matches the specified patterns
-  VENDOR_NAME=$(get_vendor_name "$MAC_ADDRESS")
-  
-  # Output the custom formatted information for matched MAC address prefixes
-  printf "%-15s %-17s %-12s %-15s\n" "$IP_ADDRESS" "$MAC_ADDRESS" "$DEVICE" "$VENDOR_NAME"
-done
+# Process the output of the arp command
+while read -r line; do
+    ip_address=$(echo "$line" | awk '{print $1}')
+    hw_address=$(echo "$line" | awk '{print $3}')
+    device=$(echo "$line" | awk '{print $7}')
+    mac_prefix=$(echo "$hw_address" | awk -F ':' '{print $1":"$2":"$3}')
+
+    # Get the vendor information using the get_vendor function
+    vendor=$(get_vendor "$mac_prefix")
+
+    # Print the information in the desired format
+    printf "%-15s %-17s %-12s %-15s\n" "$ip_address" "$hw_address" "$device" "$vendor"
+done < <(arp -a)
