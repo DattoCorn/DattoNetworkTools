@@ -16,7 +16,7 @@ get_vendor_name() {
 # ... rest of the script ...
 
 # Inside the loop...
-while read -r line
+echo "$ARP_TABLE" | while read -r line
 do
   IP_ADDRESS=$(echo "$line" | awk '{print $1}')
   MAC_ADDRESS=$(echo "$line" | awk '{print $4}')
@@ -35,4 +35,4 @@ do
   
   # Output the custom formatted information for matched MAC address prefixes
   printf "%-15s %-17s %-12s %-15s\n" "$IP_ADDRESS" "$MAC_ADDRESS" "$DEVICE" "$VENDOR_NAME"
-done <<< "$ARP_TABLE"
+done
