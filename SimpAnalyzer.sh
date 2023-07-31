@@ -14,9 +14,10 @@ get_vendor_name() {
   echo "$VENDOR_NAME"
 }
 
-# Print the table header
-printf "%-17s | %-25s | %s\n" "MAC Address" "Vendor" "Port"
-printf "-----------------------------------+---------------------------+-----------------\n"
+# Print the custom column headers
+printf "----------------------Simp Tool V1------------------------\n"
+printf "%-15s %-17s %-12s %-15s\n" "IP Address" "HW Address" "Device" "Vendor"
+printf "---------------------------------------------------------\n"
 
 # Inside the loop...
 echo "$ARP_TABLE" | while read -r line
@@ -29,5 +30,5 @@ do
   VENDOR_NAME=$(get_vendor_name "$MAC_ADDRESS")
   
   # Output the custom formatted information for matched MAC address prefixes
-  printf "%-17s | %-25s | %s\n" "$MAC_ADDRESS" "$VENDOR_NAME" "$DEVICE"
-done | column -t -s "|"
+  printf "%-15s %-17s %-12s %-15s\n" "$IP_ADDRESS" "$MAC_ADDRESS" "$DEVICE" "$VENDOR_NAME"
+done
