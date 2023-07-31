@@ -7,7 +7,7 @@ curl -o /tmp/Vendors.json https://raw.githubusercontent.com/DattoCorn/DattoNetwo
 ARP_TABLE=$(cat /proc/net/arp)
 
 # Print the custom column headers
-printf "----------------------Simp Tool V1.5------------------------\n"
+printf "----------------------Simp Tool V1------------------------\n"
 printf "%-15s %-17s %-12s %-15s\n" "IP Address" "HW Address" "Device" "Vendor"
 printf "---------------------------------------------------------\n"
 
@@ -23,7 +23,7 @@ do
   
   # Check if the MAC address matches the patterns in the JSON file
   MATCHED="N/A"
-  VENDOR_NAME=$(grep -B 1 "\"$MAC_PREFIX\"" /tmp/Vendors.json | grep -oP '"name":\s*"\K[^"]+')
+  VENDOR_NAME=$(awk -v pattern="\"$MAC_PREFIX\"" '$0 ~ pattern {getline; gsub(/"name": "/, ""); gsub(/",/, ""); print $0}' /tmp/Vendors.json)
   if [ -n "$VENDOR_NAME" ]; then
     MATCHED="Matched"
   else
