@@ -3,8 +3,7 @@
 echo " ╔╦╗┌─┐┌┬┐┌┬┐┌─┐  ╔╗╔┌─┐┌┬┐┬ ┬┌─┐┬─┐┬┌─┬┌┐┌┌─┐  ╦ ╔╦╗╔═╗  ╔╦╗┌─┐┌─┐┬  "
 echo "  ║║├─┤ │  │ │ │  ║║║├┤  │ ││││ │├┬┘├┴┐│││││ ┬  ║  ║ ║╣    ║ │ ││ ││  "
 echo " ═╩╝┴ ┴ ┴  ┴ └─┘  ╝╚╝└─┘ ┴ └┴┘└─┘┴└─┴ ┴┴┘└┘└─┘  ╩═╝╩ ╚═╝   ╩ └─┘└─┘┴─┘"
-
-echo "Datto Networking LTE Tool V2.3"
+echo "Datto Networking LTE Tool V2.5"
 
 # Attempt to get the device type
 if cat /etc/datto/model >/dev/null 2>&1; then
@@ -36,15 +35,33 @@ run_cmd() {
     return $status
 }
 
+# Function to check the modem IP
+check_modem_ip() {
+    modem_ip=$(modemstatus --verbose | grep "IP :" | awk '{ print $3 }')
+    if [ "$modem_ip" = "0.0.0.0" ]; then
+        return 1
+    else
+        return 0
+    fi
+}
+
 while true; do
     # Step 1
     run_cmd "modemstatus --verbose"
+    
+    # Check modem IP
+    check_modem_ip
+    if [ $? -eq 1 ]; then
+        echo "Modem IP is 0.0.0.0. Starting modem manager."
+        run_cmd "/etc/init.d/dna-modemmanager start"
+        sleep 5
+        run_cmd "modemstatus --verbose"
+    fi
 
     # Step 2
     if run_cmd "ping -I lte0 8.8.8.8 -c 3"; then
         echo "LTE is working. Exiting script."
-        exit 0 # Exit the script with a success code
-        
+        exit 0
     fi
 
     # Step 3
