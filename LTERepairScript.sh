@@ -1,9 +1,10 @@
 #!/bin/sh
 
-echo" ╔╦╗┌─┐┌┬┐┌┬┐┌─┐  ╔╗╔┌─┐┌┬┐┬ ┬┌─┐┬─┐┬┌─┬┌┐┌┌─┐  ╦ ╔╦╗╔═╗  ╔╦╗┌─┐┌─┐┬  "
-echo"  ║║├─┤ │  │ │ │  ║║║├┤  │ ││││ │├┬┘├┴┐│││││ ┬  ║  ║ ║╣    ║ │ ││ ││  "
-echo" ═╩╝┴ ┴ ┴  ┴ └─┘  ╝╚╝└─┘ ┴ └┴┘└─┘┴└─┴ ┴┴┘└┘└─┘  ╩═╝╩ ╚═╝   ╩ └─┘└─┘┴─┘"
-echo "Datto Networking LTE Tool V2.2"
+echo " ╔╦╗┌─┐┌┬┐┌┬┐┌─┐  ╔╗╔┌─┐┌┬┐┬ ┬┌─┐┬─┐┬┌─┬┌┐┌┌─┐  ╦ ╔╦╗╔═╗  ╔╦╗┌─┐┌─┐┬  "
+echo "  ║║├─┤ │  │ │ │  ║║║├┤  │ ││││ │├┬┘├┴┐│││││ ┬  ║  ║ ║╣    ║ │ ││ ││  "
+echo " ═╩╝┴ ┴ ┴  ┴ └─┘  ╝╚╝└─┘ ┴ └┴┘└─┘┴└─┴ ┴┴┘└┘└─┘  ╩═╝╩ ╚═╝   ╩ └─┘└─┘┴─┘"
+
+echo "Datto Networking LTE Tool V2.3"
 
 # Attempt to get the device type
 if cat /etc/datto/model >/dev/null 2>&1; then
@@ -42,6 +43,7 @@ while true; do
     # Step 2
     if run_cmd "ping -I lte0 8.8.8.8 -c 3"; then
         echo "LTE is working. Exiting script."
+        exit 0 # Exit the script with a success code
         
     fi
 
@@ -57,6 +59,7 @@ while true; do
     # Step 6
     if run_cmd "ping -I lte0 8.8.8.8 -c 3"; then
         echo "LTE is working after modem reconnect. Exiting script."
+         exit 0 # Exit the script with a success code
         
     fi
 
@@ -69,6 +72,7 @@ while true; do
     # Step 9
     if run_cmd "ping -I lte0 8.8.8.8 -c 3"; then
         echo "LTE is working after sequans-gpio-reset. Exiting script."
+         exit 0 # Exit the script with a success code
         
     fi
 
