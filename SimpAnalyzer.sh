@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Path to the local jq binary in the same directory as the script
-JQ_PATH="./jq"
+JQ_PATH="./jq-Linux64"
 
 # Download the JSON file to /tmp
 curl -o /tmp/Vendors.json https://raw.githubusercontent.com/DattoCorn/DattoNetworkTools/main/Vendors.json
