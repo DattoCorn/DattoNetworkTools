@@ -1,16 +1,16 @@
 #!/bin/sh
 
+# Path to the local jq binary in the same directory as the script
+JQ_PATH="./jq"
+
 # Download the JSON file to /tmp
 curl -o /tmp/Vendors.json https://raw.githubusercontent.com/DattoCorn/DattoNetworkTools/main/Vendors.json
-
-# Remove ^M characters from the JSON file
-dos2unix /tmp/Vendors.json
 
 # Retrieve the ARP table
 ARP_TABLE=$(cat /proc/net/arp)
 
 # Print the custom column headers
-printf "----------------------Simp Tool V1------------------------\n"
+printf "----------------------Simp Tool V3------------------------\n"
 printf "%-15s %-17s %-12s %-15s\n" "IP Address" "HW Address" "Device" "Vendor"
 printf "---------------------------------------------------------\n"
 
@@ -24,11 +24,10 @@ do
   # Extract the first 6 characters of the MAC address and convert to uppercase
   MAC_PREFIX=$(echo "$MAC_ADDRESS" | cut -d ":" -f 1-3 | tr '[:lower:]' '[:upper:]')
   
-  # Search for the MAC prefix in the JSON file and extract the vendor name
-  VENDOR_NAME="Unknown"
-  VENDOR_ENTRY=$(cat /tmp/Vendors.json | grep -i -B 1 "\"pattern\": \"$MAC_PREFIX\"")
-  if [ -n "$VENDOR_ENTRY" ]; then
-    VENDOR_NAME=$(echo "$VENDOR_ENTRY" | grep -o '"name": "[^"]*' | cut -d '"' -f 4)
+  # Search for the MAC prefix in the JSON file and extract the vendor name using the local jq binary
+  VENDOR_NAME=$($JQ_PATH -r --arg MAC_PREFIX "$MAC_PREFIX" '.[] | select(.pattern == $MAC_PREFIX) | .name' /tmp/Vendors.json)
+  if [ -z "$VENDOR_NAME" ]; then
+    VENDOR_NAME="Unknown"
   fi
   
   # Output the custom formatted information for matched MAC address prefixes
