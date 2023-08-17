@@ -82,9 +82,10 @@ while true; do
 
     # Step 7
     run_cmd "sequans-gpio-reset"
-
+    sleep 4
     # Step 8
     run_cmd "modemreconnect"
+    sleep 4
 
     # Step 9
     if run_cmd "ping -I lte0 8.8.8.8 -c 3"; then
@@ -95,7 +96,7 @@ while true; do
 
     # Step 10
     run_cmd "${modemmanager_cmd} stop"
-
+    sleep 5
     # Step 11
     echo "Running: pymm"
     pymm &
