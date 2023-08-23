@@ -46610,7 +46610,8 @@
       },
       {
         "name": "Open Mesh, Inc.",
-        "pattern": "F8:D9:B8|AC:86:74"
+        "pattern": "F8:D9:B8|AC:86:74",
+        "potentialProblems": "Nothing because we da best!"
       },
       {
         "name": "Open Network Co., Ltd.",
