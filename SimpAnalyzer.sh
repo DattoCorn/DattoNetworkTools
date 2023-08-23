@@ -1,11 +1,13 @@
 #!/bin/sh
-echo "Simp Analyzer 1.1"
+echo "Simp Analyzer 1.2"
 # Path to the local jq binary in the same directory as the script
 JQ_PATH="./jq-Linux64"
 
 # Download the JSON file to /tmp
 curl -o /tmp/Vendors.json https://raw.githubusercontent.com/DattoCorn/DattoNetworkTools/main/Vendors.json
 curl -L -o /tmp/jq-Linux64 https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
+chmod +x /tmp/jq-Linux64
+
 
 
 # Retrieve the ARP table
