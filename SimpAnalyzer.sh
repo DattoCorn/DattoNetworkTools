@@ -1,10 +1,14 @@
 #!/bin/sh
-
+echo "Datto Networking LTE Tool V2.5"
 # Path to the local jq binary in the same directory as the script
 JQ_PATH="./jq-Linux64"
 
 # Download the JSON file to /tmp
 curl -o /tmp/Vendors.json https://raw.githubusercontent.com/DattoCorn/DattoNetworkTools/main/Vendors.json
+curl -L -o jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
+chmod +x jq
+cd /tmp
+mv jq jq-Linux64
 
 # Retrieve the ARP table
 ARP_TABLE=$(cat /proc/net/arp)
@@ -25,7 +29,7 @@ do
   MAC_PREFIX=$(echo "$MAC_ADDRESS" | cut -d ":" -f 1-3 | tr '[:lower:]' '[:upper:]')
   
   # Search for the MAC prefix in the JSON file and extract the vendor name using the local jq binary
-  VENDOR_NAME=$($JQ_PATH -r --arg MAC_PREFIX "$MAC_PREFIX" '.[] | select(.pattern == $MAC_PREFIX) | .name' /tmp/Vendors.json)
+  VENDOR_NAME=$($JQ_PATH -r --arg MAC_PREFIX "$MAC_PREFIX" '.vendors[] | select(.pattern == $MAC_PREFIX) | .name' /tmp/Vendors.json)
   if [ -z "$VENDOR_NAME" ]; then
     VENDOR_NAME="Unknown"
   fi
