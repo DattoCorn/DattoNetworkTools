@@ -8,11 +8,11 @@ else
     model="D200"
 fi
 
-# Decide which jq binary to use based on the model
+# Decide which jq command to use based on the model
 if [ "$model" = "D200" ]; then
-    JQ_PATH="jq"
+    JQ_CMD="jq"
 else
-    JQ_PATH="./jq-Linux64"
+    JQ_CMD="/tmp/jq-Linux64"
 fi
 
 # Download the JSON file to /tmp
@@ -25,7 +25,7 @@ ARP_TABLE=$(cat /proc/net/arp)
 
 # Print the custom column headers
 printf "----------------------Simp Tool V1.3------------------------\n"
-printf "%-15s %-17s %-12s %-15s %-30s\n" "IP Address" "HW Address" "Device" "Vendor" "Potential Problems"
+printf "%-15s %-17s %-12s %-15s %-20s\n" "IP Address" "HW Address" "Device" "Vendor" "Potential Problems"
 printf "----------------------------------------------------------------------------------------------\n"
 
 # Iterate over each line in the ARP table
@@ -38,21 +38,17 @@ do
   # Extract the first 6 characters of the MAC address and convert to uppercase
   MAC_PREFIX=$(echo "$MAC_ADDRESS" | cut -d ":" -f 1-3 | tr '[:lower:]' '[:upper:]')
   
-  # Search for the MAC prefix in the JSON file and extract the vendor name and potential problems using the jq binary
-  VENDOR_DATA=$($JQ_PATH -r --arg MAC_PREFIX "$MAC_PREFIX" '.vendors[] | select((.pattern | ascii_upcase) | contains($MAC_PREFIX | ascii_upcase)) | {name: .name, problems: .potentialProblems}' /tmp/Vendors.json)
-
-  VENDOR_NAME=$(echo "$VENDOR_DATA" | jq -r '.name')
-  PROBLEMS=$(echo "$VENDOR_DATA" | jq -r '.problems')
-
+  # Search for the MAC prefix in the JSON file and extract the vendor name using the jq command
+  VENDOR_NAME=$($JQ_CMD -r --arg MAC_PREFIX "$MAC_PREFIX" '.vendors[] | select((.pattern | ascii_upcase) | contains($MAC_PREFIX | ascii_upcase)) | .name' /tmp/Vendors.json)
   if [ -z "$VENDOR_NAME" ]; then
-      VENDOR_NAME="Unknown"
+    VENDOR_NAME="Unknown"
   fi
 
-  # If there is no problems data or it's "null" (which is how jq returns absent JSON keys), leave it blank
-  if [ -z "$PROBLEMS" ] || [ "$PROBLEMS" = "null" ]; then
-      PROBLEMS=""
+  POTENTIAL_PROBLEMS=$($JQ_CMD -r --arg MAC_PREFIX "$MAC_PREFIX" '.vendors[] | select((.pattern | ascii_upcase) | contains($MAC_PREFIX | ascii_upcase)) | .potentialProblems' /tmp/Vendors.json)
+  if [ -z "$POTENTIAL_PROBLEMS" ]; then
+    POTENTIAL_PROBLEMS=""
   fi
-
+  
   # Output the custom formatted information for matched MAC address prefixes
-  printf "%-15s %-17s %-12s %-15s %-30s\n" "$IP_ADDRESS" "$MAC_ADDRESS" "$DEVICE" "$VENDOR_NAME" "$PROBLEMS"
+  printf "%-15s %-17s %-12s %-15s %-20s\n" "$IP_ADDRESS" "$MAC_ADDRESS" "$DEVICE" "$VENDOR_NAME" "$POTENTIAL_PROBLEMS"
 done
