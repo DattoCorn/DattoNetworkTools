@@ -24,9 +24,9 @@ chmod +x /tmp/jq-Linux64
 ARP_TABLE=$(cat /proc/net/arp)
 
 # Print the custom column headers
-printf "----------------------Simp Tool V1.1------------------------\n"
-printf "%-15s %-17s %-12s %-15s\n" "IP Address" "HW Address" "Device" "Vendor"
-printf "---------------------------------------------------------\n"
+printf "----------------------Simp Tool V1.3------------------------\n"
+printf "%-15s %-17s %-12s %-15s %-30s\n" "IP Address" "HW Address" "Device" "Vendor" "Potential Problems"
+printf "----------------------------------------------------------------------------------------------\n"
 
 # Iterate over each line in the ARP table
 echo "$ARP_TABLE" | while read -r line
@@ -38,12 +38,21 @@ do
   # Extract the first 6 characters of the MAC address and convert to uppercase
   MAC_PREFIX=$(echo "$MAC_ADDRESS" | cut -d ":" -f 1-3 | tr '[:lower:]' '[:upper:]')
   
-  # Search for the MAC prefix in the JSON file and extract the vendor name using the jq binary
-  VENDOR_NAME=$($JQ_PATH -r --arg MAC_PREFIX "$MAC_PREFIX" '.vendors[] | select((.pattern | ascii_upcase) | contains($MAC_PREFIX | ascii_upcase)) | .name' /tmp/Vendors.json)
+  # Search for the MAC prefix in the JSON file and extract the vendor name and potential problems using the jq binary
+  VENDOR_DATA=$($JQ_PATH -r --arg MAC_PREFIX "$MAC_PREFIX" '.vendors[] | select((.pattern | ascii_upcase) | contains($MAC_PREFIX | ascii_upcase)) | {name: .name, problems: .potentialProblems}' /tmp/Vendors.json)
+
+  VENDOR_NAME=$(echo "$VENDOR_DATA" | jq -r '.name')
+  PROBLEMS=$(echo "$VENDOR_DATA" | jq -r '.problems')
+
   if [ -z "$VENDOR_NAME" ]; then
-    VENDOR_NAME="Unknown"
+      VENDOR_NAME="Unknown"
   fi
-  
+
+  # If there is no problems data or it's "null" (which is how jq returns absent JSON keys), leave it blank
+  if [ -z "$PROBLEMS" ] || [ "$PROBLEMS" = "null" ]; then
+      PROBLEMS=""
+  fi
+
   # Output the custom formatted information for matched MAC address prefixes
-  printf "%-15s %-17s %-12s %-15s\n" "$IP_ADDRESS" "$MAC_ADDRESS" "$DEVICE" "$VENDOR_NAME"
+  printf "%-15s %-17s %-12s %-15s %-30s\n" "$IP_ADDRESS" "$MAC_ADDRESS" "$DEVICE" "$VENDOR_NAME" "$PROBLEMS"
 done
