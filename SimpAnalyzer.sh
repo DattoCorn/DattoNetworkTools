@@ -16,8 +16,8 @@ else
 fi
 
 # Download the JSON file to /tmp
-curl -o /tmp/Vendors.json https://raw.githubusercontent.com/DattoCorn/DattoNetworkTools/main/Vendors.json
-curl -L -o /tmp/jq-Linux64 https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
+curl -k -o /tmp/Vendors.json https://raw.githubusercontent.com/DattoCorn/DattoNetworkTools/main/Vendors.json
+curl -k -L -o /tmp/jq-Linux64 https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
 chmod +x /tmp/jq-Linux64
 
 # Retrieve the ARP table
