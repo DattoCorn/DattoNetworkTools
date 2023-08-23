@@ -1,5 +1,5 @@
 #!/bin/sh
-echo "Simp Analyzer 1.2"
+echo "Simp Analyzer 1.3"
 
 # Check device model
 if cat /etc/datto/model >/dev/null 2>&1; then
@@ -24,7 +24,7 @@ chmod +x /tmp/jq-Linux64
 ARP_TABLE=$(cat /proc/net/arp)
 
 # Print the custom column headers
-printf "----------------------Simp Tool V3.2------------------------\n"
+printf "----------------------Simp Tool V1.1------------------------\n"
 printf "%-15s %-17s %-12s %-15s\n" "IP Address" "HW Address" "Device" "Vendor"
 printf "---------------------------------------------------------\n"
 
