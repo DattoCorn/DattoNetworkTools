@@ -39,7 +39,7 @@ do
   MAC_PREFIX=$(echo "$MAC_ADDRESS" | cut -d ":" -f 1-3 | tr '[:lower:]' '[:upper:]')
   
   # Search for the MAC prefix in the JSON file and extract the vendor name using the jq binary
-  VENDOR_NAME=$($JQ_PATH -r --arg MAC_PREFIX "$MAC_PREFIX" '.vendors[] | select(.pattern == $MAC_PREFIX) | .name' /tmp/Vendors.json)
+  VENDOR_NAME=$($JQ_PATH -r --arg MAC_PREFIX "$MAC_PREFIX" '.vendors[] | select((.pattern | ascii_upcase) | contains($MAC_PREFIX | ascii_upcase)) | .name' /tmp/Vendors.json)
   if [ -z "$VENDOR_NAME" ]; then
     VENDOR_NAME="Unknown"
   fi
